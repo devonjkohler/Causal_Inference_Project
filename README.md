@@ -4,7 +4,7 @@
 
 A Language for Counterfactual Generative Models - Overview of the Omega programming language recommended by Robert (most important)***
 
-Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188 (more important)**
+Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188, example of an SBML on pg 188 (more important)**
 
 https://en.wikipedia.org/wiki/Gillespie_algorithm - Wiki for Gillespie is actually pretty helpful as well (more important)**
 
