@@ -1,5 +1,15 @@
 # Causal_Inference_Project
 
+## Installing Omega
+
+I had some issues installing Omega (It wouldnt load after installation). I'd recommend installing it in the following sequence:
+
+Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
+
+Pkg.add("Omega")
+
+- Devon
+
 ## Literature
 
 A Language for Counterfactual Generative Models - Overview of the Omega programming language recommended by Robert (most important)***
