@@ -1,10 +1,20 @@
 # Causal_Inference_Project
 
+## Installing Omega
+
+I had some issues installing Omega (It wouldnt load after installation). I'd recommend installing it in the following sequence:
+
+Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
+
+Pkg.add("Omega")
+
+- Devon
+
 ## Literature
 
 A Language for Counterfactual Generative Models - Overview of the Omega programming language recommended by Robert (most important)***
 
-Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188 (more important)**
+Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188, example of an SBML on pg 188 (more important)**
 
 https://en.wikipedia.org/wiki/Gillespie_algorithm - Wiki for Gillespie is actually pretty helpful as well (more important)**
 
