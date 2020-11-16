@@ -68,7 +68,7 @@ function get_hazards(ecology, theta)
     """
     Compute the hazard function given the current states.  Note that in this
         model the function depends only on state, not time, though this is not
-        the case in general. "spawn_prey" represents the even of a prey being born,
+        the case in general. "spawn_prey" represents the event of a prey being born,
         "prey2pred" represents a predator consuming a new prey and consequently spawning
         a new predator, "pred_dies" represents the death of a predator.
 
@@ -91,7 +91,9 @@ initial = Dict("prey" => 50, "pred" => 100)
 Pre = [[1, 0], [1, 1], [0, 1]]
 Post = [[2, 0], [0, 2], [0, 0]]
 transition_mat = Post - Pre
-transitions = Dict("spawn_prey" => transition_mat[1,], "prey2pred" => transition_mat[2,], "pred_dies" => transition_mat[3,])
+transitions = Dict("spawn_prey" => transition_mat[1,],
+                    "prey2pred" => transition_mat[2,],
+                    "pred_dies" => transition_mat[3,])
 
 gillespie_sim = gillespie(transitions, initial, 10000, "H2", 0.0)
 
