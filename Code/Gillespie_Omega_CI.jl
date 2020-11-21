@@ -1,7 +1,6 @@
 
 ## Load Packages
 using Omega
-using UnicodePlots
 using StatsBase
 using Plots
 using Random
@@ -79,6 +78,12 @@ function get_hazards(ecology, theta)
         )
 end
 
+# function sample_hazards(rng, weights)
+#     sample(["test1", "test2", "test3"], Weights(weights))
+# end
+# test = ciid(sample_hazards, [20,50,25])
+# rand(test,5)
+
 # Define gillespie parameters
 Pre = [[1, 0], [1, 1], [0, 1]]
 Post = [[2, 0], [0, 2], [0, 0]]
@@ -106,21 +111,29 @@ samples = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, gillespi
                 5, alg = RejectionSample)
 
 
-plot_vals = hcat(values(samples[1][6]["prey"]), values(samples[1][6]["pred"]))
-plot(1:5001, plot_vals[1:5001,1:2],
+plot_vals = hcat(values(samples[3][6]["prey"]), values(samples[3][6]["pred"]))
+plot(1:10001, plot_vals[1:10001,1:2],
         title = "Basic Simulation",
         label = ["Prey" "Pred"],
         lw = 1.25)
 
 ## Sample with intervention
-samples_int = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, gillespie),
-                    prey_init > 125, 5, alg = RejectionSample)
+++
 
 plot_vals = hcat(values(samples[2][6]["prey"]), values(samples_int[2][6]["prey"]))
 plot(1:5001, plot_vals[1:5001,1:2],
         title = "Intervention Comparison",
-        label = ["Prey No Intervention" "Prey > 125"],
+        label = ["Prey No Intervention" "Prey > 120"],
         lw = 1.25)
+
+plot_vals = hcat(values(samples_int[2][6]["prey"]), values(samples_int[2][6]["pred"]))
+plot(1:5001, plot_vals[1:5001,1:2],
+        title = "Intervention Simulation",
+        label = ["Prey" "Pred"],
+        lw = 1.25)
+
+x = samples[2][6][1000]["prey"] - samples_int[2][6][1000]["prey"]
+histogram(x)
 
 samples_rate_int = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, gillespie),
                     spawn_prey > 1.2, 5, alg = RejectionSample)
@@ -129,16 +142,6 @@ plot_vals = hcat(values(samples[2][6]["prey"]), values(samples_rate_int[2][6]["p
 plot(1:5001, plot_vals[1:5001,1:2],
         title = "Intervention Comparison",
         label = ["Prey No Intervention" "Prey - spawn_prey_rate > 1.2"],
-        lw = 1.25)
-
-## Counterfactual
-gillespie_new = replace(gillespie, prey_init => 120)
-counter_samples = rand(gillespie_new, 5, alg = RejectionSample)
-
-plot_vals = hcat(values(samples[2][6]["prey"]), values(counter_samples[2]["prey"]))
-plot(1:5001, plot_vals[1:5001,1:2],
-        title = "Counterfactual Comparison",
-        label = ["Prey No Intervention" "Prey > 125"],
         lw = 1.25)
 
 ## Idea for intervention at t_now
@@ -177,16 +180,13 @@ function gillespie_time_intervention_(rng, transitions, N, time, update,t0=0.0)
         transition = transitions[sample(collect(keys(hazards)), Weights(collect(values(hazards))))]
         t = t + sum(values(hazards))
 
-        if N == time
-            ecology["prey"] = update
-            ecology["pred"] += transition[2]
-        else
-            ecology["prey"] += transition[1]
-            ecology["pred"] += transition[2]
-            # Enforce only positive integers
-            ecology["prey"] = max(1, ecology["prey"])
-            ecology["pred"] = max(1, ecology["pred"])
-        end
+        ecology["prey"] += transition[1]
+        ecology["pred"] += transition[2]
+
+        # Enforce only positive integers
+        ecology["prey"] = max(1, ecology["prey"])
+        ecology["pred"] = max(1, ecology["pred"])
+
         append!(trajectory["prey"], ecology["prey"])
         append!(trajectory["pred"], ecology["pred"])
         append!(times, t)
@@ -199,12 +199,21 @@ function gillespie_time_intervention_(rng, transitions, N, time, update,t0=0.0)
         )
 end
 
+
+model = (prey_init, pred_init, spawn_prey, prey2pred, pred_dies, gillespie)
+
+samples = rand(model,
+                5, alg = RejectionSample)
+
 gillespie_int = ciid(gillespie_time_intervention_, transitions, 10000, 2000, 100, 0.0)
 gillespie_new = replace(gillespie, gillespie => gillespie_int)
-counter_samples = rand(gillespie_new, 5, alg = RejectionSample)
 
-plot_vals = hcat(values(samples[1][6]["prey"]), values(counter_samples[1]["prey"]))
-plot(1:5001, plot_vals[1:5001,1:2],
+counter_samples = rand(gillespie_new, 5, alg = RejectionSample)
+counter_samples = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, gillespie_new),
+                     5, alg = RejectionSample)
+
+plot_vals = hcat(values(samples[1][6]["prey"]), values(counter_samples[1][6]["prey"]))
+plot(1:10001, plot_vals[1:10001,1:2],
         title = "Counterfactual Comparison",
-        label = ["Prey No Intervention" "Prey > 125"],
+        label = ["Prey No Intervention" "Prey Counterfactual"],
         lw = 1.25)
