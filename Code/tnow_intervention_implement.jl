@@ -21,11 +21,11 @@ function initial_simulation(rng, t, transitions)
     """
 
     ecology = Dict("prey" => prey_init(rng), "pred" => pred_init(rng))
-    theta = Dict("spawn_prey" => spawn_prey(rng),
-                 "prey2pred" => prey2pred(rng),
-                 "pred_dies" => pred_dies(rng))
+    # theta = Dict("spawn_prey" => spawn_prey(rng),
+    #              "prey2pred" => prey2pred(rng),
+    #              "pred_dies" => pred_dies(rng))
 
-    hazards = get_hazards(ecology, theta)
+    hazards = get_hazards_fix(ecology, theta)
 
     # Does this make sense?
     hazard_sample = ciid(sample_weights, hazards)
@@ -44,6 +44,12 @@ function initial_simulation(rng, t, transitions)
 end
 
 function one_simulation(rng, n, theta, transitions)
+
+    """
+    Simulates all steps of gillespie except intial step. Takes into account
+    the results of the previous step "n".
+    """
+
     ecology = functions_list[n](rng)
     ecology_temp = copy(ecology)
     t = ecology["t"]
@@ -119,6 +125,10 @@ spawn_prey = normal(1, .1)
 prey2pred = normal(.01, .001)
 pred_dies = normal(.5, .05)
 
+theta = Dict("spawn_prey" => rand(spawn_prey,1),
+             "prey2pred" => rand(prey2pred,1),
+             "pred_dies" => rand(pred_dies,1))
+
 # Random variables for each step of simulation
 temp = ciid(initial_simulation, t0, transitions) # initial step
 functions_list = Any[]
@@ -140,6 +150,20 @@ push!(functions_list, pred_dies)
 # sample
 samples = rand(Tuple(x for x in functions_list),
                 5, alg = RejectionSample)
+
+# extract run results and plot
+prey_vals = []
+pred_vals = []
+for x in 1:N
+    push!(prey_vals,samples[3][x]["prey"])
+    push!(pred_vals,samples[3][x]["pred"])
+end
+
+plot(hcat(prey_vals,pred_vals))
+
+# sample
+samples = rand(Tuple(x for x in functions_list),prey_init > 120
+                ,, alg = RejectionSample)
 
 # extract run results and plot
 prey_vals = []

@@ -163,27 +163,13 @@ function sample_weights(rng, hazards)
     return result
 end
 
-function initial_simulation(rng, ecology, theta, t, transitions)
-    hazards = get_hazards(ecology, theta)
+function initial_simulation(rng, t, transitions)
 
-    # Does this make sense?
-    hazard_sample = ciid(sample_weights, hazards)
-    transition = transitions[hazard_sample(rng)]
-    t_new = t + sum(values(hazards))
+    ecology = Dict("prey" => prey_init(rng), "pred" => pred_init(rng))
+    theta = Dict("spawn_prey" => spawn_prey(rng),
+                 "prey2pred" => prey2pred(rng),
+                 "pred_dies" => pred_dies(rng))
 
-    ecology_new_prey = ecology["prey"] + transition[1]
-    ecology_new_pred = ecology["pred"] + transition[2]
-    # Enforce only positive integers
-    ecology_new_prey = max(1, ecology_new_prey)
-    ecology_new_pred = max(1, ecology_new_pred)
-
-    return ecology_new_prey, ecology_new_pred, t_new
-end
-
-function one_simulation(rng, ecology, theta, transitions)
-
-    t = ecology["t"]
-    delete!(ecology, "t")
     hazards = get_hazards(ecology, theta)
 
     # Does this make sense?
@@ -202,34 +188,62 @@ function one_simulation(rng, ecology, theta, transitions)
                 "t" => t_new)
 end
 
-initial = Dict("prey" => rand(prey_init,1)[1], "pred" => rand(pred_init, 1)[1])
-theta_intial = Dict("spawn_prey" => rand(spawn_prey,1)[1],
-             "prey2pred" => rand(prey2pred,1)[1],
-             "pred_dies" => rand(pred_dies,1)[1])
+temp = ciid(initial_simulation, t0, transitions)
+samples = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, temp),
+                5, alg = RejectionSample)
 
-test2 = ciid(initial_simulation, initial, theta_intial, t0, transitions)
-rand(test2,100)
+function get_hazards_fix(ecology, theta)
+    """
+    A function to fix annoying julia things
+    """
+    return Dict(
+        "spawn_prey" => theta["spawn_prey"][1] * ecology["prey"],
+        "prey2pred" => theta["prey2pred"][1] * ecology["prey"] * ecology["pred"],
+        "pred_dies" => theta["pred_dies"][1] * ecology["pred"]
+        )
+end
 
-functions_list = Dict("F0" => ciid(initial_simulation, initial, theta_intial, t0, transitions))
-N = 100
+function one_simulation(rng, n, theta, transitions)
+    ecology = functions_list[n](rng)
+    ecology_temp = copy(ecology)
+    t = ecology["t"]
+    delete!(ecology_temp, "t")
+    hazards = get_hazards_fix(ecology_temp, theta)
+    # Does this make sense?
+    #hazard_sample = ciid(sample_weights, hazards)
+    transition = transitions[sample(collect(keys(hazards)), Weights(collect(values(hazards))))]
+    t_new = t + sum(values(hazards))
 
-for f in 1:N
+    ecology_new_prey = ecology_temp["prey"] + transition[1]
+    ecology_new_pred = ecology_temp["pred"] + transition[2]
+    # Enforce only positive integers
+    ecology_new_prey = max(1, ecology_new_prey)
+    ecology_new_pred = max(1, ecology_new_pred)
+
+    return Dict("prey" => ecology_new_prey,
+                "pred" => ecology_new_pred,
+                "t" => t_new)
+end
+
+temp = ciid(initial_simulation, t0, transitions)
+functions_list = Any[]
+push!(functions_list, temp)
+N = 5
+for f in 2:N
     last = f - 1
-    functions_list["F$f"] = ciid(one_simulation, functions_list["F$last"], theta, transitions)
+    temp = ciid(one_simulation, last, theta, transitions)
+    push!(functions_list, temp)
 end
 
-##
-# maybe need initial run and then consecutive as different functions
-# run1(initial) => run2(run1_output) => run3(run2_output) => run4(run3_output)
-#
+push!(functions_list,prey_init)
+push!(functions_list, pred_init)
+push!(functions_list, spawn_prey)
+push!(functions_list, prey2pred)
+push!(functions_list, pred_dies)
 
-F1 = one_simulation
+samples = rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies,
+functions_list[1], functions_list[2]),
+                5, alg = RejectionSample)
 
-function test_func(x,y)
-    return x + y
-end
-
-a = Symbol("test_func")
-@eval $a(1,2)
-
-Symbol("y") = 20
+samples = rand(Tuple(x for x in functions_list),
+                5, alg = RejectionSample)
