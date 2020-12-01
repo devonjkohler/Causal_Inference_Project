@@ -16,7 +16,8 @@ function one_simulation_prey(rng, n, transitions)
     #t = t_list[n](rng)
     hazard_result = hazards_list[n](rng)
     prey_val = prey_list[n](rng)
-    transition = transitions[hazard_result]
+    labels = ["spawn_prey", "pred_dies","prey2pred"]
+    transition = transitions[labels[hazard_result]]
     new_prey = prey_val + transition[1]
 
     # Enforce only positive integers
@@ -33,7 +34,8 @@ function one_simulation_pred(rng, n, transitions)
     #t = t_list[n](rng)
     hazard_result = hazards_list[n](rng)
     pred_val = pred_list[n](rng)
-    transition = transitions[hazard_result]
+    labels = ["spawn_prey", "pred_dies","prey2pred"]
+    transition = transitions[labels[hazard_result]]
     new_pred = pred_val + transition[2]
 
     # Enforce only positive integers
@@ -63,7 +65,11 @@ function get_hazards(rng, n)
         "prey2pred" => theta(rng)["prey2pred"] * ecology["prey"] * ecology["pred"],
         "pred_dies" => theta(rng)["pred_dies"] * ecology["pred"]
         )
-    sample(collect(keys(hazards)), Weights(collect(values(hazards))))
+
+    vals = collect(values(hazards))
+    sum_vals = sum(vals)
+    prob_vals = vals/sum_vals
+    categorical(rng,prob_vals)
 end
 
 function generate_rates(rng)
@@ -102,7 +108,7 @@ pred_list = Any[]
 theta = ciid(generate_rates)
 push!(prey_list, prey_init)
 push!(pred_list, pred_init)
-N = 10000
+N = 1000
 
 for f in 2:N
     last = f - 1
@@ -114,10 +120,10 @@ for f in 2:N
     push!(pred_list, pred_temp)
 end
 
-random_var_tuple = (Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...,
-                Tuple(x for x in hazards_list)...,
+random_var_tuple = (Tuple(x for x in hazards_list)...,
                 Tuple(x for x in prey_list)...,
-                Tuple(x for x in pred_list)...)
+                Tuple(x for x in pred_list)...,
+                Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
 
 samples = rand(random_var_tuple,
                 2, alg = RejectionSample)
@@ -141,7 +147,7 @@ pred_list = Any[]
 theta = ciid(generate_rates)
 push!(prey_list, prey_init)
 push!(pred_list, pred_init)
-N = 1000
+N = 5000
 
 for f in 2:N
     last = f - 1
@@ -152,31 +158,27 @@ for f in 2:N
     push!(prey_list, prey_temp)
     push!(pred_list, pred_temp)
 end
-random_var_tuple = (Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...,
-                Tuple(x for x in hazards_list)...,
+random_var_tuple = (Tuple(x for x in hazards_list)...,
                 Tuple(x for x in prey_list)...,
-                Tuple(x for x in pred_list)...)
-samples = rand(random_var_tuple, random_var_tuple[N+500] < 50.00,
-                100, alg = RejectionSample)
+                Tuple(x for x in pred_list)...,
+                Tuple(Any[spawn_prey, prey2pred, pred_dies, theta])...)
+
+samples = rand(random_var_tuple, random_var_tuple[12500] < 55,
+                5, alg = RejectionSample)
 
 compile = []
-for x in 1:100
-    push!(compile, samples[x][N+500])
+for x in 1:5
+    push!(compile, samples[x][12500])
 end
-histogram(compile, bins = 10)
-
-compile = []
-for x in 1:100
-    push!(compile, samples[x][N*2+999])
-end
-histogram(compile, bins = 10)
+histogram(compile, bins = 10,
+        title = "Intervention at < 100")
 
 # extract run results and plot
 prey_vals = []
 pred_vals = []
 for x in 1:(N-1)
-    push!(prey_vals,samples[3][N+x])
-    push!(pred_vals,samples[3][(N*2)+x])
+    push!(prey_vals,samples[1][N+x])
+    push!(pred_vals,samples[1][(N*2)+x])
 end
 
 plot(hcat(prey_vals,pred_vals),
@@ -205,3 +207,23 @@ for x in 1:100
     push!(compile, samples[x][3])
 end
 histogram(compile, bins = 10)
+
+## Fix hazards
+function test_hazards(rng)
+    ecology = Dict("prey" => prey_init(rng), "pred" => pred_init(rng))
+
+    hazards = Dict(
+        "spawn_prey" => theta(rng)["spawn_prey"] * ecology["prey"],
+        "prey2pred" => theta(rng)["prey2pred"] * ecology["prey"] * ecology["pred"],
+        "pred_dies" => theta(rng)["pred_dies"] * ecology["pred"]
+        )
+
+    vals = collect(values(hazards))
+    sum_vals = sum(vals)
+    prob_vals = vals/sum_vals
+    categorical(rng,prob_vals)
+end
+
+hazards_temp = ciid(test_hazards)
+rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, theta,hazards_temp),
+        hazards_temp<2, 100, alg = RejectionSample)
