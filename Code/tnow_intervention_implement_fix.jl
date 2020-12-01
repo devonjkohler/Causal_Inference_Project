@@ -69,19 +69,18 @@ function get_hazards(rng, n)
     vals = collect(values(hazards))
     sum_vals = sum(vals)
     prob_vals = vals/sum_vals
-    categorical(rng,prob_vals)
+    categorical(rng, prob_vals)
 end
 
 function generate_rates(rng)
 
     Dict("spawn_prey" => spawn_prey(rng),
-                 "prey2pred" => prey2pred(rng),
-                 "pred_dies" => pred_dies(rng))
+         "prey2pred" => prey2pred(rng),
+         "pred_dies" => pred_dies(rng))
 
 end
 
-## Run simulation
-# Define gillespie parameters
+## Initialize paramters
 Pre = [[1, 0], [1, 1], [0, 1]]
 Post = [[2, 0], [0, 2], [0, 0]]
 transition_mat = Post - Pre
@@ -100,15 +99,14 @@ spawn_prey = normal(1., .1)
 prey2pred = normal(.01, .001)
 pred_dies = normal(.5, .05)
 
-## Sample without intervention
-# Random variables for each step of simulation
+## Generate Model
 hazards_list = Any[]
 prey_list = Any[]
 pred_list = Any[]
 theta = ciid(generate_rates)
 push!(prey_list, prey_init)
 push!(pred_list, pred_init)
-N = 1000
+N = 10
 
 for f in 2:N
     last = f - 1
@@ -125,6 +123,7 @@ random_var_tuple = (Tuple(x for x in hazards_list)...,
                 Tuple(x for x in pred_list)...,
                 Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
 
+## Sample
 samples = rand(random_var_tuple,
                 2, alg = RejectionSample)
 # extract run results and plot
@@ -136,42 +135,23 @@ for x in 1:(N-1)
 end
 
 plot(hcat(prey_vals,pred_vals),
-        title = "Intervention Simulation",
+        title = "Simulation",
+        xlabel = "Time",
+        ylabel = "Quantity",
         label = ["Prey" "Pred"],
         lw = 1.25)
 
-## Sample with intervention
-hazards_list = Any[]
-prey_list = Any[]
-pred_list = Any[]
-theta = ciid(generate_rates)
-push!(prey_list, prey_init)
-push!(pred_list, pred_init)
-N = 5000
+## Sample with conditional
+samples = rand(random_var_tuple, random_var_tuple[7500] < 55,
+                50, alg = RejectionSample)
 
-for f in 2:N
-    last = f - 1
-    hazards_temp = ciid(get_hazards, last) # individual step
-    prey_temp = ciid(one_simulation_prey, last, transitions) # individual step
-    pred_temp = ciid(one_simulation_pred, last, transitions) # individual step
-    push!(hazards_list, hazards_temp)
-    push!(prey_list, prey_temp)
-    push!(pred_list, pred_temp)
-end
-random_var_tuple = (Tuple(x for x in hazards_list)...,
-                Tuple(x for x in prey_list)...,
-                Tuple(x for x in pred_list)...,
-                Tuple(Any[spawn_prey, prey2pred, pred_dies, theta])...)
-
-samples = rand(random_var_tuple, random_var_tuple[12500] < 55,
-                5, alg = RejectionSample)
-
+# Histogram to test that conditional worked
 compile = []
-for x in 1:5
-    push!(compile, samples[x][12500])
+for x in 1:50
+    push!(compile, samples[x][7500])
 end
 histogram(compile, bins = 10,
-        title = "Intervention at < 100")
+        title = "Prey at T=2500 (<55 Intervention)")
 
 # extract run results and plot
 prey_vals = []
@@ -182,9 +162,39 @@ for x in 1:(N-1)
 end
 
 plot(hcat(prey_vals,pred_vals),
-        title = "Intervention Simulation",
+        title = "Prey <55 at T=2500 Simulation",
+        xlabel = "Time",
+        ylabel = "Quantity",
         label = ["Prey" "Pred"],
         lw = 1.25)
+
+## Counterfactual
+samples = rand(random_var_tuple, 1, alg = RejectionSample)
+# extract run results and plot
+prey_vals = []
+pred_vals = []
+for x in 1:(N-1)
+    push!(prey_vals,samples[1][N+x])
+    push!(pred_vals,samples[1][(N*2)+x])
+end
+
+plot(hcat(prey_vals,pred_vals),
+        title = "Simulation",
+        xlabel = "Time",
+        ylabel = "Quantity",
+        label = ["Prey" "Pred"],
+        lw = 1.25)
+
+new_prey_5 = replace(prey_list[5], prey_list[4] => 80.0)
+deleteat!(prey_list, 5)
+push!(prey_list, new_prey_5)
+random_var_tuple = (Tuple(x for x in hazards_list)...,
+                Tuple(x for x in prey_list)...,
+                Tuple(x for x in pred_list)...,
+                Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
+samples = rand(new_prey_5, 1, alg = RejectionSample)
+
+diffsamples = rand(random_var_tuple[7500],10)
 
 ## Test
 x = normal(100, 10)
@@ -208,7 +218,7 @@ for x in 1:100
 end
 histogram(compile, bins = 10)
 
-## Fix hazards
+## Broken hazard
 function test_hazards(rng)
     ecology = Dict("prey" => prey_init(rng), "pred" => pred_init(rng))
 
@@ -221,7 +231,7 @@ function test_hazards(rng)
     vals = collect(values(hazards))
     sum_vals = sum(vals)
     prob_vals = vals/sum_vals
-    categorical(rng,prob_vals)
+    rand(Multinomial(1, prob_vals))[1]
 end
 
 hazards_temp = ciid(test_hazards)
