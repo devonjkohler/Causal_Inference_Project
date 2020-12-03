@@ -88,7 +88,6 @@ transitions = Dict("spawn_prey" => transition_mat[1,],
                     "prey2pred" => transition_mat[2,],
                     "pred_dies" => transition_mat[3,])
 #t0=0.0
-N = 10
 
 # Random variables for starting values
 prey_init = normal(100, 10)
@@ -106,7 +105,7 @@ pred_list = Any[]
 theta = ciid(generate_rates)
 push!(prey_list, prey_init)
 push!(pred_list, pred_init)
-N = 10
+N = 5000
 
 for f in 2:N
     last = f - 1
@@ -151,7 +150,7 @@ for x in 1:50
     push!(compile, samples[x][7500])
 end
 histogram(compile, bins = 10,
-        title = "Prey at T=2500 (<55 Intervention)")
+        title = "Prey at T=2500 (<55 Conditional)")
 
 # extract run results and plot
 prey_vals = []
@@ -185,55 +184,25 @@ plot(hcat(prey_vals,pred_vals),
         label = ["Prey" "Pred"],
         lw = 1.25)
 
-new_prey_5 = replace(prey_list[5], prey_list[4] => 80.0)
-deleteat!(prey_list, 5)
-push!(prey_list, new_prey_5)
+new_prey_5 = replace(prey_list[10], prey_list[9] => 300.0)
+prey_list[10] = new_prey_5
 random_var_tuple = (Tuple(x for x in hazards_list)...,
                 Tuple(x for x in prey_list)...,
                 Tuple(x for x in pred_list)...,
                 Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
-samples = rand(new_prey_5, 1, alg = RejectionSample)
+adj_samples = rand(random_var_tuple, 1, alg = RejectionSample)
 
-diffsamples = rand(random_var_tuple[7500],10)
-
-## Test
-x = normal(100, 10)
-function deterministic(rng)
-    if x(rng) > 100
-        x(rng) + 10
-    else
-        x(rng) - 50
-    end
-end
-deterministic_ = ciid(deterministic)
-function deterministic_two(rng)
-    deterministic_(rng) - 10
-end
-deterministic_two_ = ciid(deterministic_two)
-tuple_test = (x, deterministic_, deterministic_two_)
-samples = rand(tuple_test, tuple_test[3]<110, 100, alg = RejectionSample)
-compile = []
-for x in 1:100
-    push!(compile, samples[x][3])
-end
-histogram(compile, bins = 10)
-
-## Broken hazard
-function test_hazards(rng)
-    ecology = Dict("prey" => prey_init(rng), "pred" => pred_init(rng))
-
-    hazards = Dict(
-        "spawn_prey" => theta(rng)["spawn_prey"] * ecology["prey"],
-        "prey2pred" => theta(rng)["prey2pred"] * ecology["prey"] * ecology["pred"],
-        "pred_dies" => theta(rng)["pred_dies"] * ecology["pred"]
-        )
-
-    vals = collect(values(hazards))
-    sum_vals = sum(vals)
-    prob_vals = vals/sum_vals
-    rand(Multinomial(1, prob_vals))[1]
+# extract run results and plot
+prey_vals = []
+pred_vals = []
+for x in 1:(N-1)
+    push!(prey_vals,adj_samples[1][N+x])
+    push!(pred_vals,adj_samples[1][(N*2)+x])
 end
 
-hazards_temp = ciid(test_hazards)
-rand((prey_init, pred_init, spawn_prey, prey2pred, pred_dies, theta,hazards_temp),
-        hazards_temp<2, 100, alg = RejectionSample)
+plot(hcat(prey_vals,pred_vals),
+        title = "Intervention Prey T10=300",
+        xlabel = "Time",
+        ylabel = "Quantity",
+        label = ["Prey" "Pred"],
+        lw = 1.25)
