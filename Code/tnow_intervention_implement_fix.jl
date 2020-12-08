@@ -5,7 +5,6 @@ using Random
 using Plots
 using Distributions
 
-Random.seed!(123)
 
 function one_simulation_prey(rng, n, transitions)
 
@@ -90,22 +89,24 @@ transitions = Dict("spawn_prey" => transition_mat[1,],
 #t0=0.0
 
 # Random variables for starting values
-prey_init = normal(100, 10)
-pred_init = normal(50, 10)
+prey_init = normal(10., .001)
+pred_init = normal(10., .001)
 
 # Random variables for rates
-spawn_prey = normal(1., .1)
-prey2pred = normal(.01, .001)
-pred_dies = normal(.5, .05)
+spawn_prey = normal(1.5, .01)
+prey2pred = normal(1.0, .0001)
+pred_dies = normal(3.0, .0075)
+
 
 ## Generate Model
 hazards_list = Any[]
 prey_list = Any[]
 pred_list = Any[]
+Random.seed!(1234)
 theta = ciid(generate_rates)
 push!(prey_list, prey_init)
 push!(pred_list, pred_init)
-N = 5000
+N = 500
 
 for f in 2:N
     last = f - 1
@@ -122,15 +123,18 @@ random_var_tuple = (Tuple(x for x in hazards_list)...,
                 Tuple(x for x in pred_list)...,
                 Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
 
+
 ## Sample
+Random.seed!(1234)
 samples = rand(random_var_tuple,
-                2, alg = RejectionSample)
+                1, alg = RejectionSample)
+
 # extract run results and plot
 prey_vals = []
 pred_vals = []
 for x in 1:(N-1)
-    push!(prey_vals,samples[2][N+x])
-    push!(pred_vals,samples[2][(N*2)+x])
+    push!(prey_vals,samples[1][N+x])
+    push!(pred_vals,samples[1][(N*2)+x])
 end
 
 plot(hcat(prey_vals,pred_vals),
@@ -141,16 +145,41 @@ plot(hcat(prey_vals,pred_vals),
         lw = 1.25)
 
 ## Sample with conditional
-samples = rand(random_var_tuple, random_var_tuple[7500] < 55,
-                50, alg = RejectionSample)
-
-# Histogram to test that conditional worked
-compile = []
-for x in 1:50
-    push!(compile, samples[x][7500])
+hazards_list = Any[]
+prey_list = Any[]
+pred_list = Any[]
+theta = ciid(generate_rates)
+push!(prey_list, prey_init)
+push!(pred_list, pred_init)
+N = 1000
+for f in 2:N
+    last = f - 1
+    hazards_temp = ciid(get_hazards, last) # individual step
+    if f in 400:500
+        prey_temp_ = ciid(one_simulation_prey, last, transitions) # individual step
+        prey_temp = cond(prey_temp_, prey_temp_ > 180)
+    else
+        prey_temp = ciid(one_simulation_prey, last, transitions) # individual step
+    end
+    #if f in 500:750
+    #    pred_temp_ = ciid(one_simulation_pred, last, transitions) # individual step
+    #    pred_temp = cond(pred_temp_, pred_temp_ < 120)
+    #else
+    pred_temp = ciid(one_simulation_pred, last, transitions) # individual step
+    #end
+    push!(hazards_list, hazards_temp)
+    push!(prey_list, prey_temp)
+    push!(pred_list, pred_temp)
 end
-histogram(compile, bins = 10,
-        title = "Prey at T=2500 (<55 Conditional)")
+
+random_var_tuple = (Tuple(x for x in hazards_list)...,
+                Tuple(x for x in prey_list)...,
+                Tuple(x for x in pred_list)...,
+                Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
+
+Random.seed!(1234)
+samples = rand(random_var_tuple,
+                1, alg = RejectionSample)
 
 # extract run results and plot
 prey_vals = []
@@ -167,7 +196,15 @@ plot(hcat(prey_vals,pred_vals),
         label = ["Prey" "Pred"],
         lw = 1.25)
 
+# Histogram to test that conditional worked
+compile = []
+for x in 1:50
+    push!(compile, samples[x][7500])
+end
+histogram(compile, bins = 10,
+        title = "Prey at T=2500 (<55 Conditional)")
 ## Counterfactual
+Random.seed!(1234)
 samples = rand(random_var_tuple, 1, alg = RejectionSample)
 # extract run results and plot
 prey_vals = []
@@ -184,13 +221,17 @@ plot(hcat(prey_vals,pred_vals),
         label = ["Prey" "Pred"],
         lw = 1.25)
 
-new_prey_5 = replace(prey_list[10], prey_list[9] => 300.0)
-prey_list[10] = new_prey_5
-random_var_tuple = (Tuple(x for x in hazards_list)...,
-                Tuple(x for x in prey_list)...,
+replace_index = 15
+new_prey = replace(prey_list[replace_index],
+                    prey_list[replace_index - 1] => 30.0)
+prey_list_replace = prey_list
+prey_list_replace[replace_index] = new_prey
+random_var_tuple_int = (Tuple(x for x in hazards_list)...,
+                Tuple(x for x in prey_list_replace)...,
                 Tuple(x for x in pred_list)...,
                 Tuple(Any[spawn_prey,prey2pred,pred_dies,theta])...)
-adj_samples = rand(random_var_tuple, 1, alg = RejectionSample)
+Random.seed!(1234)
+adj_samples = rand(random_var_tuple_int, 1, alg = RejectionSample)
 
 # extract run results and plot
 prey_vals = []
@@ -198,6 +239,27 @@ pred_vals = []
 for x in 1:(N-1)
     push!(prey_vals,adj_samples[1][N+x])
     push!(pred_vals,adj_samples[1][(N*2)+x])
+end
+
+plot(hcat(prey_vals,pred_vals),
+        title = "Intervention Prey T15=30",
+        xlabel = "Time",
+        ylabel = "Quantity",
+        label = ["Prey" "Pred"],
+        lw = 1.25)
+
+## Int fix test
+replace_index = 16
+test = replace(prey_list[replace_index],
+                    prey_list[replace_index - 1] => normal(30,1))
+
+Random.seed!(1234)
+samples = rand(random_var_tuple, 1, alg = RejectionSample)
+prey_vals = []
+pred_vals = []
+for x in 1:(N-1)
+    push!(prey_vals,samples[1][N+x])
+    push!(pred_vals,samples[1][(N*2)+x])
 end
 
 plot(hcat(prey_vals,pred_vals),
