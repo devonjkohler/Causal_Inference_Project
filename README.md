@@ -23,7 +23,7 @@ Once program is implemented, could scale it to any system that is described by a
 
 ### Prerequisites 
 
-Julia [Windows](https://julialang.org/downloads/platform/#windows)[macOS]( https://julialang.org/downloads/platform/#macos)[Linux](https://julialang.org/downloads/platform/#linux_and_freebsd)
+Julia [Windows](https://julialang.org/downloads/platform/#windows)|[macOS]( https://julialang.org/downloads/platform/#macos)|[Linux](https://julialang.org/downloads/platform/#linux_and_freebsd)
 
 
 The following julia packages must be installed to run the Jupyter notebooks in this project:
