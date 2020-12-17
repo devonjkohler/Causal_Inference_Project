@@ -68,7 +68,7 @@ Pkg.add("Omega")
 
 #### Notebooks
 
-When reviewing this project please run the notebooks in the following order to get a full understanding of both our research process and how the implementation works.
+When reviewing this project please run the notebooks in the following order to get a full understanding of both our research process and how the implementation works. We attempted to make the code run as fast as possible, however there are a few sections that still take a little while to run. These slow parts are noted in the comments and can be sped up by reducing the number of samples that are drawn.
 
 WE SHOULD ADD NAMES OF NOTEBOOKS HERE IN THESE STEPS
 1. First implementation of Lotka Volterra using random variables for each step
