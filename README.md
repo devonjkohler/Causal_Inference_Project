@@ -29,7 +29,7 @@ Julia [Windows](https://julialang.org/downloads/platform/#windows)|[macOS]( http
 The following julia packages must be installed to run the Jupyter notebooks in this project:
 
 ```
-Omega
+[Omega](https://github.com/zenna/Omega.jl)
 StatsBase
 Random
 Plots
@@ -38,6 +38,8 @@ Distributions
 If you have problems installing Omega try:
 
 Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
+
+
 Pkg.add("Omega")
 
 
@@ -46,7 +48,7 @@ Pkg.add("Omega")
 
 * [**Devon Kohler**]()
 
-* [**Vartika Tewari**]()
+* [**Vartika Tewari**](https://www.linkedin.com/in/vartika-tewari1992/)
 
 * [**Ritwik Ananad**]()
 
