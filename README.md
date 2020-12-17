@@ -1,10 +1,10 @@
 # Causal Inference in Complex Systems Using Omega
 
-This is an implementation of the Lotka-Volterra Predatar Prey model using Gillespie simulation with the probabilistic programming language Omega, allowing us to ask causal questions with the model
+This is an implementation of the Lotka-Volterra Predatar Prey model using Gillespie simulation with the probabilistic programming language Omega, allowing us to ask causal questions with the model.
 
 In this project we attempt to overcome some of the restrictions that come from using an SCM by applying probabilistic programming to the program
-Probabilistic programming allows us to model the time and cycle component of systems, through the use of recursion and dynamically determined interventions (such as intervening when a value reaches some threshold)
-In this project we use the probabilistic programming Omega, implemented in Julia
+Probabilistic programming allows us to model the time and cycle component of systems, through the use of recursion and dynamically determined interventions (such as intervening when a value reaches some threshold).
+In this project we use the probabilistic programming Omega, implemented in Julia.
 Once program is implemented, could scale it to any system that is described by a set of stochastic (or ordinary) differential equations
 
 ## Problem
@@ -28,14 +28,13 @@ handling interventions
 
 ## Deliverables
 
-1.       Implementation of Gillespie in Julia
-    
-2.       Simulation the Lotka-Volterra model using Gillespie
+1.       Simulation the Lotka-Volterra model using Gillespie
 
-3.       Implementation of the the simulation in Omega
+2.       Implementation of the the simulation in Omega
 
-4.       Run different inferences/counterfactuals using Omega
-     
+3.       Remake the Lotka-Volterra Plots from the Omega paper using Gillespie
+
+4.       Inplement the Abduction-action-prediction algorithm    
 
 ## How to run the project
 
@@ -61,7 +60,14 @@ Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
 
 Pkg.add("Omega")
 
+#### Notebooks
 
+When reviewing this project please run the notebooks in the following order to get a full understanding of both our research process and how the implementation works.
+
+1. First implementation of Lotka Volterra using random variables for each step
+    a. This was our first implementation. It can answer any causal question but suffers from performance issues on some interventions.
+2. Optimized implementation using one random variable for all steps
+3. Abduction-action-prediction Algorithm
 
 ## Authors
 
