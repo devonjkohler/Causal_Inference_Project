@@ -1,14 +1,18 @@
-# Causal_Inference_Project
+# Causal Inference in Complex Systems Using Omega
+
+This is an implementation of the Lotka-Volterra Predatar Prey model using Gillespie simulation with the probabilistic programming language Omega, allowing us to ask causal questions with the model
+
+In this project we attempt to overcome some of the restrictions that come from using an SCM by applying probabilistic programming to the program
+Probabilistic programming allows us to model the time and cycle component of systems, through the use of recursion and dynamically determined interventions (such as intervening when a value reaches some threshold)
+In this project we use the probabilistic programming Omega, implemented in Julia
+Once program is implemented, could scale it to any system that is described by a set of stochastic (or ordinary) differential equations
 
 ## Installing Omega
-
-I had some issues installing Omega (It wouldnt load after installation). I'd recommend installing it in the following sequence:
 
 Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
 
 Pkg.add("Omega")
 
-- Devon
 
 ## Literature
 
