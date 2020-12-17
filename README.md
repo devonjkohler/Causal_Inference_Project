@@ -29,7 +29,7 @@ Julia [Windows](https://julialang.org/downloads/platform/#windows)|[macOS]( http
 The following julia packages must be installed to run the Jupyter notebooks in this project:
 
 ```
-[Omega](https://github.com/zenna/Omega.jl)
+Omega
 StatsBase
 Random
 Plots
@@ -62,14 +62,12 @@ This project is licensed under Apache License 2.0 - see the [LICENSE.md](https:/
 
 
 
-## Literature
-
-A Language for Counterfactual Generative Models - Overview of the Omega programming language 
+## References
+[A Language for Counterfactual Generative Models - Overview of the Omega programming language](http://www.jameskoppel.com/files/papers/causal_neurips2019.pdf)
 
 Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188, example of an SBML on pg 188 
 
 https://en.wikipedia.org/wiki/Gillespie_algorithm 
-
 
 Leveraging Structured Biological Knowledge for Counterfactual Inference: a Case Study of Viral Pathogenesis 
 
