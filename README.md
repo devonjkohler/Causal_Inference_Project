@@ -22,17 +22,7 @@ Additionally, as a long shot goal, we would like to make comparisons between usi
 4.       Run different inferences/counterfactuals using Omega
      
 
-## How to explore this project
-
-We invite you to explore the Jupyter notebooks in this directory, which contain in-line commentary regarding our methods and conclusions. You may run the Jupyter notebooks to reproduce our findings if your device meets the software prerequisites enumerated below. 
-We have separated the project files into three folders:
-
-* **datasets** <br>
-Find our raw datasets [**here**](https://github.com/chloelarkin/county-covid-cases/tree/main/datasets).
-* **data_cleaning** <br>
-Code to clean and collate our model's variables of interest. Folder [**here**](https://github.com/chloelarkin/county-covid-cases/tree/main/data_cleaning)
-* **causal_modeling**<br>
-Our main notebook in which we construct a DAG and run experiments. Folder [**here**](https://github.com/chloelarkin/county-covid-cases/tree/main/causal_modeling)
+## How to run the project
 
 
 ### Prerequisites 
@@ -51,9 +41,16 @@ https://julialang.org/downloads/platform/#linux_and_freebsd
 The following julia packages must be installed to run the Jupyter notebooks in this project:
 
 ```
-
+Omega
+StatsBase
+Random
+Plots
+Distributions
 ```
+If you have problems installing Omega try:
 
+Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
+Pkg.add("Omega")
 
 
 
@@ -73,12 +70,6 @@ The following julia packages must be installed to run the Jupyter notebooks in t
 
 This project is licensed under Apache License 2.0 - see the [LICENSE.md](https://github.com/devonjkohler/Causal_Inference_Project/blob/main/LICENSE.md) file for details
 
-
-## Installing Omega
-
-Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
-
-Pkg.add("Omega")
 
 
 ## Literature
