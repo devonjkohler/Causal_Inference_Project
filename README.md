@@ -7,6 +7,12 @@ Probabilistic programming allows us to model the time and cycle component of sys
 In this project we use the probabilistic programming Omega, implemented in Julia.
 Once program is implemented, could scale it to any system that is described by a set of stochastic (or ordinary) differential equations
 
+The following videos give an overview of our project and goals:
+
+WHEN DEREK FINISHES VIDEOS WE CAN LINK THEM HERE
+Short summary (5 minutes)
+Longer summary with code review (20 minutes)
+
 ## Problem
 Complex systems permeate multiple sectors,  Biochemical systems such as cells, Environmental/climate systems and Economics
 
@@ -34,7 +40,7 @@ handling interventions
 
 3.       Remake the Lotka-Volterra Plots from the Omega paper using Gillespie
 
-4.       Inplement the Abduction-action-prediction algorithm    
+4.       Implement the Abduction-action-prediction algorithm    
 
 ## How to run the project
 
@@ -64,14 +70,14 @@ Pkg.add("Omega")
 
 When reviewing this project please run the notebooks in the following order to get a full understanding of both our research process and how the implementation works.
 
+WE SHOULD ADD NAMES OF NOTEBOOKS HERE IN THESE STEPS
 1. First implementation of Lotka Volterra using random variables for each step
-    a. This was our first implementation. It can answer any causal question but suffers from performance issues on some interventions.
 2. Optimized implementation using one random variable for all steps
 3. Abduction-action-prediction Algorithm
 
 ## Authors
 
-* [**Devon Kohler**]()
+* [**Devon Kohler**](https://www.linkedin.com/in/devon-kohler-5a52a032/)
 
 * [**Vartika Tewari**](https://www.linkedin.com/in/vartika-tewari1992/)
 
