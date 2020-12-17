@@ -17,7 +17,7 @@ However, complex systems are intrinsically difficult to model
 * Non-linear relationships
 * Time components
 
-** How can we create a model that addresses these difficulties and allows for us to ask causal questions?**
+**How can we create a model that addresses these difficulties and allows for us to ask causal questions?**
 * SCMs
 * Probabilistic Programming
     
