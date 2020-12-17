@@ -94,16 +94,22 @@ This project is licensed under Apache License 2.0 - see the [LICENSE.md](https:/
 
 
 ## References
-[A Language for Counterfactual Generative Models - Overview of the Omega programming language](http://www.jameskoppel.com/files/papers/causal_neurips2019.pdf)
+Zenna Tavares, James Koppel, Xin Zhang, Armando Solar-Lezama.
+	A Language for Counterfactual Generative Models.
+	MIT CSAIL / BCS (http://www.jameskoppel.com/files/papers/causal_neurips2019.pdf)
 
-Stochastic.Modelling.for.Systems.Biology.Second.Edition - Info about Gillespie on Page 182 - 188, example of an SBML on pg 188 
+Jeremy Zucker, Kaushal Paneri, Sara Mohammad-Taheri.
+	Leveraging Structured Biological Knowledge for Counterfactual Inference: a Case 
+Study of Viral Pathogenesis.
+Preprint
 
 https://en.wikipedia.org/wiki/Gillespie_algorithm 
 
-Leveraging Structured Biological Knowledge for Counterfactual Inference: a Case Study of Viral Pathogenesis 
+http://www.zenna.org/Omega.jl/latest/
 
-Beyond Structural Causal Models Causal Constraints Models - Proposes CCMs as an alternative to SCMS when modeling dynamic systems 
+Daniel T. Gillespie
+	Exact stochastic simulation of coupled chemical reactions
+The Journal of Physical Chemistry 1977 81 (25), 2340-2361
 
-Systems Biology: Basic Pathway Modeling Techniques - Intro to biochem kinetics and tellurium 
 
-Generating Synthetic Signaling Networks - A paper that goes over how to generate random signaling networks 
+
