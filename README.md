@@ -10,7 +10,7 @@ Once program is implemented, could scale it to any system that is described by a
 The following videos give an overview of our project and goals:
 
 Short summary: https://www.youtube.com/watch?v=-XwXA1r-UG4&feature=youtu.be (5 minutes)  
-Longer summary with code review: UPLOADING... (20 minutes)
+Longer summary with code review: https://www.youtube.com/watch?v=p8L0KVg-i9Q&feature=youtu.be (20 minutes)
 
 ## Problem
 Complex systems permeate multiple sectors,  Biochemical systems such as cells, Environmental/climate systems and Economics
@@ -82,7 +82,7 @@ WE SHOULD ADD NAMES OF NOTEBOOKS HERE IN THESE STEPS
 
 * [**Ritwik Ananad**]()
 
-* [**Derek Grubis**]()
+* [**Derek Grubis**](https://www.linkedin.com/in/derekgrubis/)
 
 
 
