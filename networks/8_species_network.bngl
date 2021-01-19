@@ -1,0 +1,80 @@
+###
+#@notes:'This is a plain translation of an SBML model created on 18/01/2021. The original model has 10 molecules and 6 reactions. The translated model has 10 molecules and 6 rules'
+###
+begin model
+begin parameters
+	kf_J1 0.307895461529
+	kr_J1 0.387815602196
+	K1_J1 0.642239317233
+	K2_J1 0.763744767124
+	kf_J2 0.787213757679
+	kr_J2 0.266573890463
+	K1_J2 0.410928960183
+	K2_J2 0.186684558078
+	kf_J3 0.550805951933
+	kr_J3 0.40305866757
+	K1_J3 0.260720667971
+	K2_J3 0.378534008272
+	kf_J4 0.743548813554
+	kr_J4 0.33628762781
+	kf_J5 0.825169644172
+	kr_J5 0.400064686023
+	kf_J6 0.670237604772
+	kr_J6 0.830452020005
+end parameters
+begin compartments
+	compartment  3  1.0
+end compartments
+begin molecule types
+	S1()
+	S2()
+	S3()
+	S4()
+	S5()
+	S6()
+	S7()
+	S8()
+	S_in()
+	S_out()
+end molecule types
+begin seed species
+	@compartment:S1() 0.43057001559 #S1 #S1
+	@compartment:S2() 0.244570243559 #S2 #S2
+	@compartment:S3() 28.3246433727 #S3 #S3
+	@compartment:S4() 5.92313871803 #S4 #S4
+	@compartment:S5() 12.5175675358 #S5 #S5
+	@compartment:S6() 5.92513570461 #S6 #S6
+	@compartment:S7() 17.0152047663 #S7 #S7
+	@compartment:S8() 5.00314514823 #S8 #S8
+	@compartment:$S_in() 18.022200261 #S_in #S_in
+	@compartment:S_out() 6.65159188234 #S_out #S_out
+end seed species
+begin observables
+	Species S1 S1() #S1
+	Species S2 S2() #S2
+	Species S3 S3() #S3
+	Species S4 S4() #S4
+	Species S5 S5() #S5
+	Species S6 S6() #S6
+	Species S7 S7() #S7
+	Species S8 S8() #S8
+	Species S_in S_in() #S_in
+	Species S_out S_out() #S_out
+end observables
+begin functions
+	functionRate0() = if(S_in>0,S2 * (kf_J1 * S_in / K1_J1 -kr_J1 * S7 / K2_J1) / (1 + S_in / K1_J1 + S7 / K2_J1)/S_in,0)
+	functionRate1() = if(S8>0,S5 * (kf_J2 * S8 / K1_J2 -kr_J2 * S_out / K2_J2) / (1 + S8 / K1_J2 + S_out / K2_J2)/S8,0)
+	functionRate2() = if(S_out>0,S1 * (kf_J3 * S_out / K2_J3 -kr_J3 * S8 / K1_J3) / (1 + S_out / K2_J3 + S8 / K1_J3)/S_out,0)
+	functionRate3() = if(S3>0,kf_J4 * S3 -kr_J4 * S8 * S5/S3,0)
+	functionRate4() = if(S7>0,kf_J5 * S7 -kr_J5 * S6 * S4/S7,0)
+	functionRate5() = if(S4>0,if(S6>0,kf_J6 * S4 * S6 -kr_J6 * S3/S6,0)/S4,0)
+end functions
+begin reaction rules
+	r1: S_in() -> S7() functionRate0()
+	r2: S8() -> S_out() functionRate1()
+	r3: S_out() -> S8() functionRate2()
+	r4: S3() -> S8() + S5() functionRate3()
+	r5: S7() -> S6() + S4() functionRate4()
+	r6: S4() + S6() -> S3() functionRate5()
+end reaction rules
+end model
