@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
+  <model>
+    <listOfCompartments>
+        <compartment id="compartment" name="compartment" spatialDimensions="1" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species compartment="compartment" id="X1" initialConcentration="0.5"/>
+      <species compartment="compartment" id="X2" initialConcentration="1"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter name="alpha" id="alpha" value="1"/>
+      <parameter name="beta" id="beta" value="1"/>
+      <parameter name="gamma" id="gamma" value="4"/>
+      <parameter name="delta" id="delta" value="1"/>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="R1">
+        <listOfReactants>
+          <speciesReference species="X1" />
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X1" />
+          <speciesReference species="X1" />
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> alpha </ci>
+              <ci> X1 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="R2">
+        <listOfReactants>
+          <speciesReference species="X1" />
+        </listOfReactants>
+        <listOfModifiers>
+          <modifierSpeciesReference species="X2"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> beta </ci>
+              <ci> X1 </ci>
+              <ci> X2 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="R3">
+        <listOfReactants>
+          <speciesReference species="X2" />
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> gamma </ci>
+              <ci> X2 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="R4">
+        <listOfReactants>
+          <speciesReference species="X2" />
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X2" />
+          <speciesReference species="X2" />
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="X1"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> delta </ci>
+              <ci> X1 </ci>
+              <ci> X2 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
