@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model name="kappa_resimulation_figure2">
+    <listOfCompartments>
+      <compartment id="default" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="__s0" name="K(d=None, x=&apos;u&apos;)" compartment="default" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s1" name="S(d=None, x=&apos;u&apos;)" compartment="default" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s2" name="K(d=None, x=&apos;p&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s3" name="K(d=1, x=&apos;u&apos;) ._br_S(d=1, x=&apos;u&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s4" name="K(d=1, x=&apos;p&apos;) ._br_S(d=1, x=&apos;u&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s5" name="K(d=1, x=&apos;u&apos;) ._br_S(d=1, x=&apos;p&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s6" name="K(d=1, x=&apos;p&apos;) ._br_S(d=1, x=&apos;p&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="__s7" name="S(d=None, x=&apos;p&apos;)" compartment="default" initialAmount="0" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="off_rate_fast" name="off_rate_fast" value="1000" constant="true"/>
+      <parameter id="off_rate_slow" name="off_rate_slow" value="1" constant="true"/>
+      <parameter id="mod_rate" name="mod_rate" value="5" constant="true"/>
+      <parameter id="mod_rate_slow" name="mod_rate_slow" value="0.05" constant="true"/>
+      <parameter id="on_rate" name="on_rate" value="1" constant="true"/>
+      <parameter id="K_0" name="K_0" value="1000" constant="true"/>
+      <parameter id="S_0" name="S_0" value="100" constant="true"/>
+      <parameter id="__obs0" name="obsK" constant="false"/>
+      <parameter id="__obs1" name="obsS" constant="false"/>
+    </listOfParameters>
+    <listOfInitialAssignments>
+      <initialAssignment symbol="__s0">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> K_0 </ci>
+        </math>
+      </initialAssignment>
+      <initialAssignment symbol="__s1">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> S_0 </ci>
+        </math>
+      </initialAssignment>
+    </listOfInitialAssignments>
+    <listOfRules>
+      <assignmentRule variable="__obs0">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> __s0 </ci>
+            <ci> __s3 </ci>
+            <ci> __s5 </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="__obs1">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> __s1 </ci>
+            <ci> __s3 </ci>
+            <ci> __s4 </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="r0" name="pK" reversible="false">
+        <listOfReactants>
+          <speciesReference species="__s0" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s2" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> __s0 </ci>
+              <ci> mod_rate_slow </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r1" name="b + u" reversible="true">
+        <listOfReactants>
+          <speciesReference species="__s0" constant="true"/>
+          <speciesReference species="__s1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s3" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <minus/>
+              <apply>
+                <times/>
+                <ci> __s0 </ci>
+                <ci> __s1 </ci>
+                <ci> on_rate </ci>
+              </apply>
+              <apply>
+                <times/>
+                <ci> __s3 </ci>
+                <ci> off_rate_fast </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r2" name="pK" reversible="false">
+        <listOfReactants>
+          <speciesReference species="__s3" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s4" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> __s3 </ci>
+              <ci> mod_rate_slow </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r3" name="b + u_slow" reversible="true">
+        <listOfReactants>
+          <speciesReference species="__s1" constant="true"/>
+          <speciesReference species="__s2" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s4" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <minus/>
+              <apply>
+                <times/>
+                <ci> __s1 </ci>
+                <ci> __s2 </ci>
+                <ci> on_rate </ci>
+              </apply>
+              <apply>
+                <times/>
+                <ci> __s4 </ci>
+                <ci> off_rate_slow </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r4" name="p" reversible="false">
+        <listOfReactants>
+          <speciesReference species="__s3" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s5" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> __s3 </ci>
+              <ci> mod_rate </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r5" name="pK" reversible="false">
+        <listOfReactants>
+          <speciesReference species="__s5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s6" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> __s5 </ci>
+              <ci> mod_rate_slow </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r6" name="u + b" reversible="true">
+        <listOfReactants>
+          <speciesReference species="__s5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s0" constant="true"/>
+          <speciesReference species="__s7" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <plus/>
+              <apply>
+                <minus/>
+                <apply>
+                  <times/>
+                  <ci> __s0 </ci>
+                  <ci> __s7 </ci>
+                  <ci> on_rate </ci>
+                </apply>
+              </apply>
+              <apply>
+                <times/>
+                <ci> __s5 </ci>
+                <ci> off_rate_fast </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r7" name="p" reversible="false">
+        <listOfReactants>
+          <speciesReference species="__s4" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s6" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> __s4 </ci>
+              <ci> mod_rate </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="r8" name="b + u_slow" reversible="true">
+        <listOfReactants>
+          <speciesReference species="__s2" constant="true"/>
+          <speciesReference species="__s7" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="__s6" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <minus/>
+              <apply>
+                <times/>
+                <ci> __s2 </ci>
+                <ci> __s7 </ci>
+                <ci> on_rate </ci>
+              </apply>
+              <apply>
+                <times/>
+                <ci> __s6 </ci>
+                <ci> off_rate_slow </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
