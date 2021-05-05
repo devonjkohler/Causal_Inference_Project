@@ -43,21 +43,22 @@ handling interventions
 
 ## How to run the project
 
+### Installation
+
+This code was packaged following the first-party Julia [tutorial](https://pkgdocs.julialang.org/v1/creating-packages).
+
+1. Install Julia ([Windows](https://julialang.org/downloads/platform/#windows) | 
+   [macOS]( https://julialang.org/downloads/platform/#macos) | 
+   [Linux](https://julialang.org/downloads/platform/#linux_and_freebsd))
+2. Enter the `pkg` manager by running `julia` from the shell then typing <kbd>]</kbd>
+3. Run the following:
+
+   ```julia
+   pkg> add https://github.com/devonjkohler/Causal_Inference_Project
+   ```
 
 ### Prerequisites 
 
-Julia [Windows](https://julialang.org/downloads/platform/#windows)|[macOS]( https://julialang.org/downloads/platform/#macos)|[Linux](https://julialang.org/downloads/platform/#linux_and_freebsd)
-
-
-The following julia packages must be installed to run the Jupyter notebooks in this project:
-
-```
-Omega
-StatsBase
-Random
-Plots
-Distributions
-```
 If you have problems installing Omega try:
 
 Pkg.add(Pkg.PackageSpec(;name="Flux", version="0.9.0"))
